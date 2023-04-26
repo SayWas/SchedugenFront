@@ -1,32 +1,24 @@
 <template>
     <div class="toolbar">
-        <slot name="toolbar-content">
-            <div class="toolbar-content">
-                <div class="left-block">
-                    <div @click="toggleModal" class="button add-button">Добавить</div>
-                    <div @click="deleteButtonClick" class="button delete-button">Удалить</div>
-                </div>
+        <div class="toolbar-content">
+            <div class="left-block">
+                <div @click="toggleModal" class="button add-button">Добавить</div>
+                <div @click="deleteButtonClick" class="button delete-button">Удалить</div>
             </div>
-        </slot>
-  </div>
+        </div>
+    </div>
 </template>
 
 <script>
 import Modal from "../components/Modal.vue";
+
 export default {
     name: "Toolbar",
     components: {
         Modal
     },
     props: {
-        modalTitle: {
-            type: String
-        },
         toggleModal: {
-            type: Function,
-            required: true
-        },
-        modalApplyClick: {
             type: Function,
             required: true
         },
