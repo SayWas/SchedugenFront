@@ -17,17 +17,11 @@ export default {
 
 <style scoped>
 .sidebar{
-    /* display: flex;
+    display: flex;
     position: sticky;
     top: 0;
     width: 250px;
     height: 100vh;
-    background-color: white;
-    border-right: solid 1px #E9EDF5;
-    flex-direction: column; */
-
-    display: flex;    
-    width: 250px;    
     background-color: white;
     border-right: solid 1px #E9EDF5;
     flex-direction: column;

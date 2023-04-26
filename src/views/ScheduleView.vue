@@ -1,7 +1,7 @@
 <template>
     <div class="page-content">
         <Toolbar :toggle-modal="addButtonClick" :delete-button-click="deleteButtonClick"/>
-        <Schedule :date="date" :classes="classes" :lessons="lessons"/>
+        <Schedule :date="date" :classes="classes" :lessons="lessons" subjects=""/>
     </div>
 </template>
 
@@ -70,6 +70,18 @@ export default {
                 },
                 {
                     id: 2
+                },
+                {
+                    id: 3
+                },
+                {
+                    id: 4
+                },
+                {
+                    id: 5
+                },
+                {
+                    id: 6
                 }
             ]
         }
@@ -79,10 +91,6 @@ export default {
 
 <style scoped>
 .page-content {
-    /* flex: 1; */
-    width: -webkit-fill-available;
-    height: calc(100vh - 60px);
-    max-height: calc(100vh - 60px);
-    overflow: auto;
+    flex: 1;
 }
 </style>

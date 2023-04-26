@@ -124,11 +124,7 @@ export default {
 
 <style scoped>
 .page-content {
-    /* flex: 1; */
-    width: -webkit-fill-available;
-    height: calc(100vh - 60px);
-    max-height: calc(100vh - 60px);
-    overflow: auto;
+     flex: 1;
 }
 
 .f-center {

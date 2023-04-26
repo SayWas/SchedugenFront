@@ -14,9 +14,12 @@ import NavigationBar from "@/components/NavigationBar.vue";
 </template>
 
 <style scoped>
-.body{
+.body {
     display: flex;
+    /*display: grid;*/
+    /*grid-template-columns: 250px auto;*/
 }
+
 /*header {*/
 /*  line-height: 1.5;*/
 /*  max-height: 100vh;*/

@@ -13,7 +13,7 @@
                 {{ lesson.id }} урок
             </div>
             <div v-for="cl in classes" :key="cl.id" class="schedule-field f-center">
-
+                <ScheduleLesson subject="Математика" cabinet="101" lesson-id="2"/>
             </div>
         </div>
     </div>
@@ -22,11 +22,16 @@
 <script>
 import CheckBoxIcon from "@/components/icons/CheckBoxIcon.vue";
 import CheckBoxCheckedIcon from "@/components/icons/CheckBoxCheckedIcon.vue";
+import ScheduleLesson from "@/components/ScheduleLesson.vue";
 
 export default {
     name: "Schedule",
-    components: {CheckBoxCheckedIcon, CheckBoxIcon},
+    components: {ScheduleLesson, CheckBoxCheckedIcon, CheckBoxIcon},
     props: {
+        subjects: {
+            type: Object,
+            required: true
+        },
         date: {
             type: String,
             required: true
@@ -45,8 +50,8 @@ export default {
 
 <style scoped>
 .table {
-    /*width: 85vw;*/
-    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(1, 0);
     overflow-x: auto;
 }
 
@@ -78,10 +83,6 @@ export default {
 .table .schedule-field {
     width: 250px;
     border-right: 1px solid #e5e5e5;
-}
-
-.table .number {
-    width: 30px;
 }
 
 .border-bottom {
