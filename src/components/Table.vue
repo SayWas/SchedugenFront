@@ -36,7 +36,6 @@ export default {
 </script>
 
 <style scoped>
-
 .table-content {
     display: grid;
     grid-auto-flow: column;

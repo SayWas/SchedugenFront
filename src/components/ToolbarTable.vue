@@ -10,13 +10,8 @@
 </template>
 
 <script>
-import Modal from "../components/Modal.vue";
-
 export default {
-    name: "Toolbar",
-    components: {
-        Modal
-    },
+    name: "ToolbarTable",
     props: {
         toggleModal: {
             type: Function,
@@ -33,7 +28,6 @@ export default {
 <style scoped>
 .toolbar {
     flex: 1;
-    background-color: #f5f5f5;
     border-bottom: 1px solid #e5e5e5;
     height: 60px;
 }

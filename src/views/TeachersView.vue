@@ -1,6 +1,6 @@
 <template>
     <div class="page-content">
-        <Toolbar :modal-title="modalTitle" :toggle-modal="addButtonClick" :modal-apply-click="modalApplyClick" :delete-button-click="deleteButtonClick"/>
+        <Toolbar :toggle-modal="addButtonClick" :delete-button-click="deleteButtonClick"/>
         <Table class="table" :select-all-click="selectAllClick" :is-check-box-selected="isCheckBoxSelected">
             <template #table-header-content>
                 <div class="table-name table-header-name f-center">
@@ -61,7 +61,7 @@
 <script>
 import Table from "@/components/Table.vue";
 import TableItem from "@/components/TableItem.vue";
-import Toolbar from "@/components/Toolbar.vue";
+import Toolbar from "@/components/ToolbarTable.vue";
 import Modal from "@/components/Modal.vue";
 
 export default {
