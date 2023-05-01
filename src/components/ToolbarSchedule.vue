@@ -3,21 +3,21 @@
         <div class="toolbar-content">
             <div class="block">
                 <div class="arrows-box">
-                    <div class="arrow-box">
+                    <div @click="previousButtonClick" class="arrow-box">
                         <LeftArrowIcon/>
                     </div>
-                    <div class="arrow-box">
+                    <div @click="forwardButtonClick" class="arrow-box">
                         <RightArrowIcon/>
                     </div>
                 </div>
                 <div class="date-box">
                     <DateIcon class="date"/>
-                    3 апреля. 2023 г.
+                    {{date.getDate() + " " + monthNames[date.getMonth()] + ". " + String(date.getFullYear()).padStart(4, '0') + " г." }}
                 </div>
             </div>
             <div class="block">
                 <div class="button filter-button">Фильтр</div>
-                <div class="button generate-button">Составить</div>
+                <div @click="generateButtonClick" class="button generate-button">Составить</div>
             </div>
         </div>
     </div>
@@ -31,8 +31,30 @@ import DateIcon from "@/components/icons/DateIcon.vue";
 export default {
     name: "ToolbarSchedule",
     components: {DateIcon, RightArrowIcon, LeftArrowIcon},
+    data() {
+        return {
+            monthNames: ["января", "февраля", "марта", "апреля", "мая", "июня",
+                "июля", "августа", "сентября", "октября", "ноября", "декабря"
+            ]
+        }
+    },
     props: {
-
+        date: {
+            type: Object,
+            required: true
+        },
+        previousButtonClick: {
+            type: Function,
+            required: true
+        },
+        forwardButtonClick: {
+            type: Function,
+            required: true
+        },
+        generateButtonClick: {
+            type: Function,
+            required: true
+        }
     }
 }
 </script>

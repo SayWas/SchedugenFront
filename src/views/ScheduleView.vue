@@ -1,7 +1,7 @@
 <template>
     <div class="page-content">
-        <Toolbar :toggle-modal="addButtonClick" :delete-button-click="deleteButtonClick"/>
-        <Schedule :date="date" :classes="classes" :lessons="lessons" subjects=""/>
+        <Toolbar :date="date" :previous-button-click="previousButtonClick" :forward-button-click="forwardButtonClick"/>
+        <Schedule :date="date" :classes="classes" :lessons="lessons" :subjects="subjects"/>
     </div>
 </template>
 
@@ -14,7 +14,8 @@ export default {
     components: {Schedule, Toolbar},
     data() {
         return {
-            date: "03.04",
+            // 03.04
+            date: new Date,
             classes: [
                 {
                     id: 1,
@@ -43,7 +44,8 @@ export default {
                 {
                     id: 7,
                     name: "7 класс"
-                }, {
+                },
+                {
                     id: 8,
                     name: "8 класс"
                 },
@@ -58,10 +60,6 @@ export default {
                 {
                     id: 11,
                     name: "11 класс"
-                },
-                {
-                    id: 12,
-                    name: "12 класс"
                 }
             ],
             lessons: [
@@ -82,9 +80,417 @@ export default {
                 },
                 {
                     id: 6
+                },
+                {
+                    id: 7
+                },
+                {
+                    id: 8
                 }
+            ],
+            subjects: [
+                [
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "Математика",
+                        cabinet: 101
+                    },
+                    {
+                        name: "Русский язык",
+                        cabinet: 202
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    }
+                ],
+                [
+                    {
+                        name: "Литература",
+                        cabinet: 101
+                    },
+                    {
+                        name: "Информатика",
+                        cabinet: 202
+                    },
+                    {
+                        name: "Физика",
+                        cabinet: 201
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    }
+                ],
+                [
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    }
+                ],
+                [
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    }
+                ],
+                [
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    }
+                ],
+                [
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    }
+                ],
+                [
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    }
+                ],
+                [
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    }
+                ],
+                [
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    }
+                ],
+                [
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    }
+                ],
+                [
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    },
+                    {
+                        name: "None",
+                    }
+                ]
             ]
         }
+    },
+    methods: {
+        previousButtonClick() {
+            this.date.setDate(this.date.getDate() - 1);
+            console.log(this.date);
+        },
+        forwardButtonClick() {
+            this.date.setDate(this.date.getDate() + 1);
+            console.log(this.date);
+        },
     }
 }
 </script>

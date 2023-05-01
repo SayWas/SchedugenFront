@@ -2,7 +2,7 @@
     <div class="table">
         <div class="table-content table-header border-bottom">
             <div class="date f-center">
-                {{ date }}
+                {{ String(date.getDate()).padStart(2, '0') + "." + String(date.getMonth() + 1).padStart(2, '0') }}
             </div>
             <div v-for="cl in classes" :key="cl.id" class="schedule-field f-center">
                 {{ cl.name }}
@@ -13,7 +13,8 @@
                 {{ lesson.id }} урок
             </div>
             <div v-for="cl in classes" :key="cl.id" class="schedule-field f-center">
-                <ScheduleLesson subject="Математика" cabinet="101" lesson-id="2"/>
+                <ScheduleLesson v-if="subjects[lesson.id-1][cl.id-1].name !== 'None'" :subject="subjects[lesson.id-1][cl.id-1].name"
+                                :cabinet="subjects[lesson.id-1][cl.id-1].cabinet" :lesson-id=1 />
             </div>
         </div>
     </div>
@@ -28,12 +29,8 @@ export default {
     name: "Schedule",
     components: {ScheduleLesson, CheckBoxCheckedIcon, CheckBoxIcon},
     props: {
-        subjects: {
-            type: Object,
-            required: true
-        },
         date: {
-            type: String,
+            type: Object,
             required: true
         },
         classes: {
@@ -41,6 +38,10 @@ export default {
             required: true
         },
         lessons: {
+            type: Array,
+            required: true
+        },
+        subjects: {
             type: Array,
             required: true
         }

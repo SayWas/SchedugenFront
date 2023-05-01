@@ -18,7 +18,7 @@ export default {
             required: true
         },
         cabinet: {
-            type: String,
+            type: Number,
             required: true
         }
     }
@@ -34,7 +34,13 @@ export default {
     height: 85px;
     background-color: #DBEFFD;
     border-radius: 5px;
+    cursor: pointer;
 }
+
+.lesson:hover{
+    background-color: #CCE0FD;
+}
+
 .lesson-subject{
     align-self: start;
     margin-left: 10px;
