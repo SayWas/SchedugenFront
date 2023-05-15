@@ -1,6 +1,6 @@
 <template>
     <div class="page-content">
-        <Toolbar :date="date" :previous-button-click="previousButtonClick" :forward-button-click="forwardButtonClick"/>
+        <Toolbar :date="date" :previous-button-click="previousButtonClick" :forward-button-click="forwardButtonClick" :generate-button-click="generateButtonClick"/>
         <Schedule :date="date" :classes="classes" :lessons="lessons" :subjects="subjects"/>
     </div>
 </template>
@@ -490,6 +490,9 @@ export default {
         forwardButtonClick() {
             this.date.setDate(this.date.getDate() + 1);
             console.log(this.date);
+        },
+        generateButtonClick() {
+            // this.generateCalendar();
         },
     }
 }

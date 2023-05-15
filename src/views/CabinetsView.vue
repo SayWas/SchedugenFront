@@ -9,7 +9,8 @@
             </template>
             <template #table-item-content>
                 <div v-for="cabinet in cabinets" :key="cabinet.id" class="f-border-bottom">
-                    <TableItem :item-id="cabinet.id" :edit-button-click="editButtonClick" :selected-ids="selectedCabinetsIds" @update:selected-ids="selectCabinet">
+                    <TableItem :item-id="cabinet.id" :edit-button-click="editButtonClick"
+                               :selected-ids="selectedCabinetsIds" @update:selected-ids="selectCabinet">
                         <template #table-item-content>
                             <div class="number f-center">
                                 {{ cabinet.id }}
@@ -41,6 +42,7 @@ import Toolbar from "@/components/ToolbarTable.vue";
 import Table from "@/components/Table.vue";
 import TableItem from "@/components/TableItem.vue";
 import Modal from "@/components/Modal.vue";
+import axios from 'axios';
 
 export default {
     name: "CabinetsView",
@@ -217,12 +219,15 @@ export default {
             modalTitle: null,
             isCheckBoxSelected: false,
             isEditing: null,
-            selectedCabinetsIds: [],
+            selectedCabinetsIds: []
         }
     },
     methods: {
         refreshCabinets() {
-            console.log("refreshCabinets");
+            axios.get('https://schedugen.pythonanywhere.com/api/classrooms/')
+                .then((res) => {
+                    console.log(res.data);
+                });
         },
         toggleModal() {
             this.modalIsActive = !this.modalIsActive;
@@ -256,7 +261,7 @@ export default {
         },
         selectAllClick() {
             this.isCheckBoxSelected = !this.isCheckBoxSelected;
-            if(this.isCheckBoxSelected && this.selectedCabinetsIds.length !== Object.keys(this.cabinets).length) {
+            if (this.isCheckBoxSelected && this.selectedCabinetsIds.length !== Object.keys(this.cabinets).length) {
                 this.selectedCabinetsIds = Object.keys(this.cabinets).map(cabinet => parseInt(cabinet))
             } else {
                 this.selectedCabinetsIds = []
@@ -266,6 +271,9 @@ export default {
         deleteButtonClick() {
             console.log("deleteButtonClick" + this.selectedCabinetsIds);
         }
+    },
+    mounted() {
+        this.refreshCabinets();
     }
 }
 </script>
