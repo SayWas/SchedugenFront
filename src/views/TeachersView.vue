@@ -1,61 +1,60 @@
 <template>
-    <div class="page-content">
-        <Toolbar :toggle-modal="addButtonClick" :delete-button-click="deleteButtonClick"/>
-        <Table class="table" :select-all-click="selectAllClick" :is-check-box-selected="isCheckBoxSelected">
-            <template #table-header-content>
-                <div class="table-name table-header-name f-center">
-                    ФИО
-                </div>
-                <div class="table-name table-header-name f-center">
-                    Предметы
-                </div>
-                <div class="table-name-short table-header-name f-center">
-                    Классы
-                </div>
-            </template>
+  <div class="page-content">
+    <Toolbar :toggle-modal="addButtonClick" :delete-button-click="deleteButtonClick"/>
+    <Table class="table" :select-all-click="selectAllClick" :is-check-box-selected="isCheckBoxSelected">
+      <template #table-header-content>
+        <div class="table-name table-header-name f-center">
+          ФИО
+        </div>
+        <div class="table-name table-header-name f-center">
+          Кабинеты
+        </div>
+        <div class="table-name-short table-header-name f-center">
+          Классы
+        </div>
+      </template>
+      <template #table-item-content>
+        <div v-for="(teacher, index) in teachers" :key="teacher.id" class="f-border-bottom">
+          <TableItem :item-id="teacher.id" :edit-button-click="editButtonClick" :selected-ids="selectedTeachersIds"
+                     @update:selected-ids="selectTeacher">
             <template #table-item-content>
-                <div v-for="teacher in teachers" :key="teacher.id" class="f-border-bottom">
-                    <TableItem :item-id="teacher.id" :edit-button-click="editButtonClick" :selected-ids="selectedTeachersIds" @update:selected-ids="selectTeacher">
-                        <template #table-item-content>
-                            <div class="number f-center">
-                                {{teacher.id}}
-                            </div>
-                            <div class="table-name f-center">
-                                {{teacher.name}}
-                            </div>
-                            <div class="table-name f-center">
-<!--                                {{teacher.subjects.slice(0, 5).join(', ')}}-->
-                                В карточке
-                            </div>
-                            <div class="table-name-short f-center">
-<!--                                {{teacher.classes.slice(0, 5).join(', ')}}-->
-                                В карточке
-                            </div>
-                        </template>
-                    </TableItem>
-                </div>
+              <div class="number f-center">
+                {{ index + 1 }}
+              </div>
+              <div class="table-name f-center">
+                {{ teacher.name }}
+              </div>
+              <div class="table-name f-center">
+                В карточке
+              </div>
+              <div class="table-name-short f-center">
+                В карточке
+              </div>
             </template>
-        </Table>
-        <Modal @close="toggleModal" :modalIsActive="modalIsActive" :modal-apply-click="modalApplyClick">
-            <template #modal-title>
-                {{ modalTitle }}
-            </template>
-            <template #modal-body>
-                <div class="text-field">
-                    <label class="text-field-label">ФИО</label>
-                    <input class="text-field-input" placeholder="Иванов Иван Иванович" v-model="currentTeacher.name">
-                    <label class="text-field-label">Предметы</label>
-                    <select class="text-field-input select" multiple v-model="currentTeacher.subjects">
-                        <option v-for="subject in subjects">{{subject}}</option>
-                    </select>
-                    <label class="text-field-label">Классы</label>
-                    <select class="text-field-input select" multiple v-model="currentTeacher.classes">
-                        <option v-for="cl in classes">{{cl}}</option>
-                    </select>
-                </div>
-            </template>
-        </Modal>
-    </div>
+          </TableItem>
+        </div>
+      </template>
+    </Table>
+    <Modal @close="toggleModal" :modalIsActive="modalIsActive" :modal-apply-click="modalApplyClick">
+      <template #modal-title>
+        {{ modalTitle }}
+      </template>
+      <template #modal-body>
+        <div class="text-field">
+          <label class="text-field-label">ФИО</label>
+          <input class="text-field-input" placeholder="Иванов Иван Иванович" v-model="currentTeacher.name">
+          <label class="text-field-label">Кабинеты</label>
+          <select class="text-field-input select" multiple v-model="currentTeacher.classrooms">
+            <option v-for="cabinet in cabinets" :value="cabinet.id">{{ cabinet.name }}</option>
+          </select>
+          <label class="text-field-label">Классы</label>
+          <select class="text-field-input select" multiple v-model="currentTeacher.groups">
+            <option v-for="cl in classes" :value="cl.id">{{ cl.name }}</option>
+          </select>
+        </div>
+      </template>
+    </Modal>
+  </div>
 </template>
 
 <script>
@@ -63,183 +62,189 @@ import Table from "@/components/Table.vue";
 import TableItem from "@/components/TableItem.vue";
 import Toolbar from "@/components/ToolbarTable.vue";
 import Modal from "@/components/Modal.vue";
+import axios from "axios";
 
 export default {
-    name: "TeachersView",
-    components: {Modal, Toolbar, TableItem, Table},
-    data() {
-        return {
-            teachers: {
-                1: {
-                    id: 1,
-                    name: 'Иванов Иван Иванович',
-                    subjects: ['Математика', 'Русский язык', 'Физика'],
-                    classes: ['1Б', '2', '3', '4', '5', '6', '7А', '7В', '9', '10', '11', '12'],
-                },
-                2: {
-                    id: 2,
-                    name: 'Петров Петр Петрович',
-                    subjects: ['Математика', 'Русский язык', 'Физика'],
-                    classes: ['1Б', '2', '3', '4', '5', '6', '7А', '7В', '9', '10', '11', '12'],
-                },
-                3: {
-                    id: 3,
-                    name: 'Сидоров Сидор Сидорович',
-                    subjects: ['Математика', 'Русский язык', 'Физика'],
-                    classes: ['1Б', '2', '3', '4', '5', '6', '7А', '7В', '9', '10', '11', '12'],
-                },
-                4: {
-                    id: 4,
-                    name: 'Алексеев Алексей Алексеевич',
-                    subjects: ['Математика', 'Русский язык', 'Физика'],
-                    classes: ['1Б', '2', '3', '4', '5', '6', '7А', '7В', '9', '10', '11', '12'],
-                },
-            },
-            currentTeacher: {
-                id: null,
-                name: null,
-                subjects: null,
-                classes: null,
-            },
-            subjects: ['Математика', 'Русский язык', 'Физика'],
-            classes: ['1Б', '2', '3', '4', '5', '6', '7А', '7В', '9', '10', '11', '12'],
-            modalIsActive: false,
-            modalTitle: null,
-            isCheckBoxSelected: false,
-            isEditing: null,
-            selectedTeachersIds: [],
-        }
-    },
-    methods: {
-        refreshTeachers() {
-            console.log("refreshTeachers");
-        },
-        toggleModal() {
-            this.modalIsActive = !this.modalIsActive;
-        },
-        modalApplyClick() {
-            console.log("modalApplyClick");
-            if (this.isEditing) {
-                console.log("isEditing" + this.currentTeacher.classes);
-            } else {
-                console.log("isAdding");
-            }
-            this.toggleModal();
-        },
-        addButtonClick() {
-            this.modalTitle = "Добавить учителя";
-            this.isEditing = false;
-            this.currentTeacher.name = "";
-            this.currentTeacher.subjects = [];
-            this.currentTeacher.classes = [];
-            this.toggleModal();
-            console.log("addButtonClick");
-        },
-        editButtonClick(id) {
-            this.modalTitle = "Изменить учителя";
-            this.isEditing = true;
-            this.currentTeacher = {...this.teachers[id]};
-            this.toggleModal();
-            console.log("editButtonClick");
-        },
-        selectTeacher(selectedTeachersIds) {
-            this.selectedTeachersIds = selectedTeachersIds;
-            this.isCheckBoxSelected = this.selectedTeachersIds.length === Object.keys(this.teachers).length;
-        },
-        selectAllClick() {
-            this.isCheckBoxSelected = !this.isCheckBoxSelected;
-            if(this.isCheckBoxSelected && this.selectedTeachersIds.length !== Object.keys(this.teachers).length) {
-                this.selectedTeachersIds = Object.keys(this.teachers).map(teacher => parseInt(teacher));
-            } else {
-                this.selectedTeachersIds = []
-            }
-            console.log("selectAllClick" + this.selectedTeachersIds);
-        },
-        deleteButtonClick() {
-            console.log("deleteButtonClick" + this.selectedTeachersIds);
-        }
+  name: "TeachersView",
+  components: {Modal, Toolbar, TableItem, Table},
+  data() {
+    return {
+      teachers: null,
+      currentTeacher: {
+        id: null,
+        name: null,
+        classrooms: null,
+        groups: null,
+      },
+      cabinets: null,
+      classes: null,
+      modalIsActive: false,
+      modalTitle: null,
+      isCheckBoxSelected: false,
+      isEditing: null,
+      selectedTeachersIds: [],
     }
+  },
+  methods: {
+    refreshTeachers() {
+      axios.get('https://schedugen.pythonanywhere.com/api/teachers/',
+          {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
+          .then((res) => {
+            this.teachers = res.data;
+          });
+      axios.get('https://schedugen.pythonanywhere.com/api/classrooms/',
+          {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
+          .then((res) => {
+            this.cabinets = res.data;
+          });
+      axios.get('https://schedugen.pythonanywhere.com/api/groups/',
+          {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
+          .then((res) => {
+            this.classes = res.data;
+          });
+    },
+    toggleModal() {
+      this.modalIsActive = !this.modalIsActive;
+    },
+    async modalApplyClick() {
+      if (this.isEditing) {
+        await axios.put('https://schedugen.pythonanywhere.com/api/teachers/' + this.currentTeacher.id + '/', {
+          name: this.currentTeacher.name,
+          classrooms: this.currentTeacher.classrooms,
+          groups: this.currentTeacher.groups
+        }, {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
+      } else {
+        await axios.post('https://schedugen.pythonanywhere.com/api/teachers/', {
+          name: this.currentTeacher.name,
+          classrooms: this.currentTeacher.classrooms,
+          groups: this.currentTeacher.groups
+        }, {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
+        if (this.isCheckBoxSelected) {
+          this.selectAllClick()
+        }
+      }
+      await this.refreshTeachers();
+      this.toggleModal();
+    },
+    addButtonClick() {
+      this.modalTitle = "Добавить учителя";
+      this.isEditing = false;
+      this.currentTeacher.name = "";
+      this.currentTeacher.classrooms = [];
+      this.currentTeacher.groups = [];
+      this.toggleModal();
+    },
+    editButtonClick(id) {
+      this.modalTitle = "Изменить учителя";
+      this.isEditing = true;
+      this.currentTeacher = {...this.teachers[this.teachers.findIndex(teacher => teacher.id === id)]};
+      this.toggleModal();
+    },
+    selectTeacher(selectedTeachersIds) {
+      this.selectedTeachersIds = selectedTeachersIds;
+      this.isCheckBoxSelected = this.selectedTeachersIds.length === Object.keys(this.teachers).length;
+    },
+    selectAllClick() {
+      this.isCheckBoxSelected = !this.isCheckBoxSelected;
+      if (this.isCheckBoxSelected && this.selectedTeachersIds.length !== Object.keys(this.teachers).length) {
+        this.selectedTeachersIds = this.selectedTeachersIds.concat(this.teachers.map(teacher => teacher.id));
+      } else {
+        this.selectedTeachersIds = []
+      }
+    },
+    async deleteButtonClick() {
+      for (let i = 0; i < this.selectedTeachersIds.length; i++) {
+        await axios.delete('https://schedugen.pythonanywhere.com/api/teachers/' + this.selectedTeachersIds[i] + '/',
+            {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}});
+      }
+      this.selectedTeachersIds = [];
+      this.refreshTeachers();
+    }
+  },
+  mounted() {
+    this.refreshTeachers();
+  }
 }
 </script>
 
 <style scoped>
 .page-content {
-    flex: 1;
+  flex: 1;
 }
 
 .f-center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .table .number {
-    width: 30px;
+  width: 30px;
 }
 
 .table .table-name {
-    width: 150px;
+  width: 150px;
 }
 
 .table .table-name-short {
-    width: 100px;
+  width: 100px;
 }
 
 .table .table-header-name {
-    color: #687182;
+  color: #687182;
 }
 
 .table .table-name {
-    width: 150px;
+  width: 150px;
 }
 
 .table .table-header-name {
-    color: #687182;
+  color: #687182;
 }
 
 .f-border-bottom {
-    flex: 1;
-    border-bottom: 1px solid #e5e5e5;
+  flex: 1;
+  border-bottom: 1px solid #e5e5e5;
 }
 
 .text-field {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .text-field-label {
-    display: block;
-    margin-bottom: 0.25rem;
-    margin-left: 0.2rem;
+  display: block;
+  margin-bottom: 0.25rem;
+  margin-left: 0.2rem;
 }
 
 .text-field-input {
-    display: block;
-    width: 100%;
-    height: calc(2.25rem + 2px);
-    padding: 0.375rem 0.75rem;
-    margin-bottom: 0.75rem;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #212529;
-    background-clip: padding-box;
-    border: 1px solid #e5e5e5;
-    border-radius: 0.2rem;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  display: block;
+  width: 100%;
+  height: calc(2.25rem + 2px);
+  padding: 0.375rem 0.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #212529;
+  background-clip: padding-box;
+  border: 1px solid #e5e5e5;
+  border-radius: 0.2rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
 .text-field-input::placeholder {
-    color: #687182;
-    opacity: 0.4;
+  color: #687182;
+  opacity: 0.4;
 }
 
 .text-field-input:focus {
-    color: black;
-    outline: 0;
-    box-shadow: 0 0 0 0.1rem rgba(158, 158, 158, 0.25);
+  color: black;
+  outline: 0;
+  box-shadow: 0 0 0 0.1rem rgba(158, 158, 158, 0.25);
 }
 
-.select{
-    height: 100px;
+.select {
+  height: 100px;
 }
 </style>

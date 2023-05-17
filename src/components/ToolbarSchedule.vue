@@ -12,11 +12,10 @@
                 </div>
                 <div class="date-box">
                     <DateIcon class="date"/>
-                    {{date.getDate() + " " + monthNames[date.getMonth()] + ". " + String(date.getFullYear()).padStart(4, '0') + " г." }}
+                    {{ weekNames[date] }}
                 </div>
             </div>
             <div class="block">
-                <div class="button filter-button">Фильтр</div>
                 <div @click="generateButtonClick" class="button generate-button">Составить</div>
             </div>
         </div>
@@ -33,14 +32,12 @@ export default {
     components: {DateIcon, RightArrowIcon, LeftArrowIcon},
     data() {
         return {
-            monthNames: ["января", "февраля", "марта", "апреля", "мая", "июня",
-                "июля", "августа", "сентября", "октября", "ноября", "декабря"
-            ]
+            weekNames: ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
         }
     },
     props: {
         date: {
-            type: Object,
+            type: Number,
             required: true
         },
         previousButtonClick: {
@@ -120,10 +117,6 @@ export default {
     font-size: 14px;
     cursor: pointer;
     padding: 3px;
-}
-
-.filter-button {
-    margin-right: 20px;
 }
 
 .generate-button {
