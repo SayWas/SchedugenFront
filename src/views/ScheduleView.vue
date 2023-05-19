@@ -181,6 +181,9 @@ export default {
     },
     generateButtonClick() {
       // this.generateCalendar();
+    },
+    findMistakes(){
+
     }
   },
   mounted() {

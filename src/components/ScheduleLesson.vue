@@ -64,7 +64,7 @@ export default {
           });
     }
   },
-  mounted() {
+  updated() {
     if (this.subject.id != null) {
       this.getSubject();
       this.getTeacher();

@@ -2,14 +2,18 @@
 import {RouterLink, RouterView} from 'vue-router'
 import Header from "@/components/Header.vue";
 import NavigationBar from "@/components/NavigationBar.vue";
+import store from "@/store";
 </script>
 
 <template>
+  <RouterView v-if="store.state.access_token === ''"/>
+  <div v-else>
     <Header/>
     <div class="body">
         <NavigationBar/>
         <RouterView/>
     </div>
+  </div>
 </template>
 
 <style scoped>
