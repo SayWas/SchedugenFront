@@ -62,12 +62,13 @@ export default {
     }
   },
   methods: {
-    refreshSubjects() {
-      axios.get('https://schedugen.pythonanywhere.com/api/subjects/',
+    async refreshSubjects() {
+      await axios.get('https://schedugen.pythonanywhere.com/api/subjects/',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
           .then((res) => {
             this.subjects = res.data;
           });
+      this.$store.commit("setLoaded", true);
     },
     toggleModal() {
       this.modalIsActive = !this.modalIsActive;

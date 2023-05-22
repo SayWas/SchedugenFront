@@ -31,16 +31,18 @@ export default {
   methods: {
     loginButtonClick() {
       axios.post("https://schedugen.pythonanywhere.com/api/login/", {
-        login: this.login,
+        username: this.login,
         password: this.password
       }).then(response => {
-        if (response.data.status === "success") {
-          this.$store.commit("setAccessToken", response.data.access_token);
+        if (response.status === 200) {
+          this.$store.commit("setAccessToken", response.data.access);
           this.$router.push("/");
         } else {
           alert("Неверный логин или пароль");
         }
       });
+      //this.$store.commit("setAccessToken", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjkyMTAwMDk2LCJpYXQiOjE2ODQzMjQwOTYsImp0aSI6IjAyOWQwMjhjY2M3ODRiZDBiMjUxOTcwNWNlOWI4MDQ5IiwidXNlcl9pZCI6Mn0.3SIsJOcCdvF1IPjed2RXNk0BY8wIgHXvMXNFY0xVhZE");
+      //this.$router.push("/");
     }
   }
 }

@@ -62,12 +62,13 @@ export default {
     }
   },
   methods: {
-    refreshClasses() {
-      axios.get('https://schedugen.pythonanywhere.com/api/groups/',
+    async refreshClasses() {
+      await axios.get('https://schedugen.pythonanywhere.com/api/groups/',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
           .then((res) => {
             this.classes = res.data;
           });
+      this.$store.commit("setLoaded", true);
     },
     toggleModal() {
       this.modalIsActive = !this.modalIsActive;

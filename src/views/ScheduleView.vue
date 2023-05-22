@@ -1,8 +1,11 @@
 <template>
   <div class="page-content">
-    <Toolbar :date="date" :previous-button-click="previousButtonClick" :forward-button-click="forwardButtonClick"
+    <Toolbar :date="date" :is-mistake="isMistake" :previous-button-click="previousButtonClick" :forward-button-click="forwardButtonClick"
+             :warning-button-click="warningButtonClick"
              :generate-button-click="generateButtonClick"/>
-    <Schedule :date="date" :classes="classes" :lessons="lessons" :schedule="schedule" :add-button-click="addButtonClick"
+    <Schedule :date="date" :classes="classes" :lessons="lessons" :schedule="schedule" :teachers="teachers"
+              :subjects="subjects" :classrooms="classrooms"
+              :add-button-click="addButtonClick"
               :edit-button-click="editButtonClick"/>
     <Modal @close="toggleModal" :modalIsActive="modalIsActive" :modal-apply-click="modalApplyClick">
       <template #modal-title>
@@ -44,6 +47,7 @@ export default {
   data() {
     return {
       date: 0,
+      isMistake: false,
       schedule: [],
       currentSubject: {
         id: null,
@@ -65,24 +69,24 @@ export default {
         {
           id: 2
         },
-        // {
-        //   id: 3
-        // },
-        // {
-        //   id: 4
-        // },
-        // {
-        //   id: 5
-        // },
-        // {
-        //   id: 6
-        // },
-        // {
-        //   id: 7
-        // },
-        // {
-        //   id: 8
-        // }
+        {
+          id: 3
+        },
+        {
+          id: 4
+        },
+        {
+          id: 5
+        },
+        {
+          id: 6
+        },
+        {
+          id: 7
+        },
+        {
+          id: 8
+        }
       ],
       modalIsActive: false,
       modalTitle: null,
@@ -91,32 +95,33 @@ export default {
     }
   },
   methods: {
-    getSchedule() {
-      axios.get('https://schedugen.pythonanywhere.com/api/schedule-classes/',
+    async getSchedule() {
+      await axios.get('https://schedugen.pythonanywhere.com/api/schedule-classes/',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
           .then((res) => {
             this.schedule = res.data;
           });
-      axios.get('https://schedugen.pythonanywhere.com/api/groups/',
+      await axios.get('https://schedugen.pythonanywhere.com/api/groups/',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
           .then((res) => {
             this.classes = res.data;
           });
-      axios.get('https://schedugen.pythonanywhere.com/api/subjects/',
+      await axios.get('https://schedugen.pythonanywhere.com/api/subjects/',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
           .then((res) => {
             this.subjects = res.data;
           });
-      axios.get('https://schedugen.pythonanywhere.com/api/classrooms/',
+      await axios.get('https://schedugen.pythonanywhere.com/api/classrooms/',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
           .then((res) => {
             this.classrooms = res.data;
           });
-      axios.get('https://schedugen.pythonanywhere.com/api/teachers/',
+      await axios.get('https://schedugen.pythonanywhere.com/api/teachers/',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
           .then((res) => {
             this.teachers = res.data;
           });
+      this.$store.commit("setLoaded", true);
     },
     toggleModal() {
       this.modalIsActive = !this.modalIsActive;
@@ -179,11 +184,12 @@ export default {
         return;
       this.date += 1;
     },
-    generateButtonClick() {
-      // this.generateCalendar();
+    warningButtonClick() {
+      // warning
+      this.isMistake = !this.isMistake;
     },
-    findMistakes(){
-
+    generateButtonClick() {
+      // generate
     }
   },
   mounted() {

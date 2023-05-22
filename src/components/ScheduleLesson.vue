@@ -28,6 +28,18 @@ export default {
     }
   },
   props: {
+    subjects: {
+      type: Array,
+      required: true
+    },
+    teachers: {
+      type: Array,
+      required: true
+    },
+    classrooms: {
+      type: Array,
+      required: true
+    },
     subject: {
       type: Object,
       required: true
@@ -42,33 +54,29 @@ export default {
     }
   },
   methods: {
-    async getSubject() {
-      await axios.get('https://schedugen.pythonanywhere.com/api/subjects/' + this.subject.subject + '/',
-          {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
-          .then((res) => {
-            this.subjectName = res.data.name;
-          });
+    getSubjectName() {
+      this.subjectName = this.subjects.find(subject => subject.id === this.subject.subject).name;
     },
-    async getTeacher() {
-      await axios.get('https://schedugen.pythonanywhere.com/api/teachers/' + this.subject.teacher + '/',
-          {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
-          .then((res) => {
-            this.teacherName = res.data.name;
-          });
+    getTeacherName() {
+      if(this.teachers.length === 0)
+        return
+      this.teacherName = this.teachers.find(teacher => teacher.id === this.subject.teacher).name;
     },
-    async getClassroom() {
-      await axios.get('https://schedugen.pythonanywhere.com/api/classrooms/' + this.subject.classroom + '/',
-          {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
-          .then((res) => {
-            this.classroomName = res.data.name;
-          });
-    }
+    getClassroomName() {
+      if(this.classrooms.length === 0)
+        return
+      this.classroomName = this.classrooms.find(classroom => classroom.id === this.subject.classroom).name;
+    },
   },
   updated() {
-    if (this.subject.id != null) {
-      this.getSubject();
-      this.getTeacher();
-      this.getClassroom()
+    if (this.subject.subject !== null && this.subjects !== undefined) {
+      this.getSubjectName()
+    }
+    if (this.subject.teacher !== null && this.teachers !== undefined) {
+      this.getTeacherName()
+    }
+    if (this.subject.classroom !== null && this.classrooms !== undefined) {
+      this.getClassroomName()
     }
   }
 }

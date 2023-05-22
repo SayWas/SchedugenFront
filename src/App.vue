@@ -10,78 +10,39 @@ import store from "@/store";
   <div v-else>
     <Header/>
     <div class="body">
-        <NavigationBar/>
+      <NavigationBar/>
+      <div class="f-one">
+        <div v-if="!store.state.page_is_loaded" class="wrapper">
+          <img src="./assets/loading.gif" class="loading-gif" alt="Loading...">
+        </div>
         <RouterView/>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
 .body {
-    display: flex;
-    /*display: grid;*/
-    /*grid-template-columns: 250px auto;*/
+  display: flex;
 }
 
-/*header {*/
-/*  line-height: 1.5;*/
-/*  max-height: 100vh;*/
-/*}*/
+.f-one{
+  flex: 1;
+}
 
-/*.logo {*/
-/*  display: block;*/
-/*  margin: 0 auto 2rem;*/
-/*}*/
+.wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 9999;
+  background: linear-gradient(to bottom, white, rgba(0, 0, 0, 0));
+}
 
-/*nav {*/
-/*  width: 100%;*/
-/*  font-size: 12px;*/
-/*  text-align: center;*/
-/*  margin-top: 2rem;*/
-/*}*/
-
-/*nav a.router-link-exact-active {*/
-/*  color: var(--color-text);*/
-/*}*/
-
-/*nav a.router-link-exact-active:hover {*/
-/*  background-color: transparent;*/
-/*}*/
-
-/*nav a {*/
-/*  display: inline-block;*/
-/*  padding: 0 1rem;*/
-/*  border-left: 1px solid var(--color-border);*/
-/*}*/
-
-/*nav a:first-of-type {*/
-/*  border: 0;*/
-/*}*/
-
-/*@media (min-width: 1024px) {*/
-/*  header {*/
-/*    display: flex;*/
-/*    place-items: center;*/
-/*    padding-right: calc(var(--section-gap) / 2);*/
-/*  }*/
-
-/*  .logo {*/
-/*    margin: 0 2rem 0 0;*/
-/*  }*/
-
-/*  header .wrapper {*/
-/*    display: flex;*/
-/*    place-items: flex-start;*/
-/*    flex-wrap: wrap;*/
-/*  }*/
-
-/*  nav {*/
-/*    text-align: left;*/
-/*    margin-left: -1rem;*/
-/*    font-size: 1rem;*/
-
-/*    padding: 1rem 0;*/
-/*    margin-top: 1rem;*/
-/*  }*/
-/*}*/
+.loading-gif{
+  margin-top: 50px;
+  width: 50px;
+  height: 50px;
+}
 </style>

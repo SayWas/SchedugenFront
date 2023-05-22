@@ -6,12 +6,6 @@
         <div class="table-name table-header-name f-center">
           ФИО
         </div>
-        <div class="table-name table-header-name f-center">
-          Кабинеты
-        </div>
-        <div class="table-name-short table-header-name f-center">
-          Классы
-        </div>
       </template>
       <template #table-item-content>
         <div v-for="(teacher, index) in teachers" :key="teacher.id" class="f-border-bottom">
@@ -23,12 +17,6 @@
               </div>
               <div class="table-name f-center">
                 {{ teacher.name }}
-              </div>
-              <div class="table-name f-center">
-                В карточке
-              </div>
-              <div class="table-name-short f-center">
-                В карточке
               </div>
             </template>
           </TableItem>
@@ -43,14 +31,6 @@
         <div class="text-field">
           <label class="text-field-label">ФИО</label>
           <input class="text-field-input" placeholder="Иванов Иван Иванович" v-model="currentTeacher.name">
-          <label class="text-field-label">Кабинеты</label>
-          <select class="text-field-input select" multiple v-model="currentTeacher.classrooms">
-            <option v-for="cabinet in cabinets" :value="cabinet.id">{{ cabinet.name }}</option>
-          </select>
-          <label class="text-field-label">Классы</label>
-          <select class="text-field-input select" multiple v-model="currentTeacher.groups">
-            <option v-for="cl in classes" :value="cl.id">{{ cl.name }}</option>
-          </select>
         </div>
       </template>
     </Modal>
@@ -72,12 +52,8 @@ export default {
       teachers: null,
       currentTeacher: {
         id: null,
-        name: null,
-        classrooms: null,
-        groups: null,
+        name: null
       },
-      cabinets: null,
-      classes: null,
       modalIsActive: false,
       modalTitle: null,
       isCheckBoxSelected: false,
@@ -86,22 +62,13 @@ export default {
     }
   },
   methods: {
-    refreshTeachers() {
-      axios.get('https://schedugen.pythonanywhere.com/api/teachers/',
+    async refreshTeachers() {
+      await axios.get('https://schedugen.pythonanywhere.com/api/teachers/',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
           .then((res) => {
             this.teachers = res.data;
           });
-      axios.get('https://schedugen.pythonanywhere.com/api/classrooms/',
-          {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
-          .then((res) => {
-            this.cabinets = res.data;
-          });
-      axios.get('https://schedugen.pythonanywhere.com/api/groups/',
-          {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
-          .then((res) => {
-            this.classes = res.data;
-          });
+      this.$store.commit("setLoaded", true);
     },
     toggleModal() {
       this.modalIsActive = !this.modalIsActive;
@@ -109,15 +76,11 @@ export default {
     async modalApplyClick() {
       if (this.isEditing) {
         await axios.put('https://schedugen.pythonanywhere.com/api/teachers/' + this.currentTeacher.id + '/', {
-          name: this.currentTeacher.name,
-          classrooms: this.currentTeacher.classrooms,
-          groups: this.currentTeacher.groups
+          name: this.currentTeacher.name
         }, {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
       } else {
         await axios.post('https://schedugen.pythonanywhere.com/api/teachers/', {
-          name: this.currentTeacher.name,
-          classrooms: this.currentTeacher.classrooms,
-          groups: this.currentTeacher.groups
+          name: this.currentTeacher.name
         }, {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
         if (this.isCheckBoxSelected) {
           this.selectAllClick()
@@ -130,8 +93,6 @@ export default {
       this.modalTitle = "Добавить учителя";
       this.isEditing = false;
       this.currentTeacher.name = "";
-      this.currentTeacher.classrooms = [];
-      this.currentTeacher.groups = [];
       this.toggleModal();
     },
     editButtonClick(id) {

@@ -62,12 +62,13 @@ export default {
     }
   },
   methods: {
-    refreshCabinets() {
-      axios.get('https://schedugen.pythonanywhere.com/api/classrooms/',
+    async refreshCabinets() {
+      await axios.get('https://schedugen.pythonanywhere.com/api/classrooms/',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
           .then((res) => {
             this.cabinets = res.data;
           });
+      this.$store.commit("setLoaded", true);
     },
     toggleModal() {
       this.modalIsActive = !this.modalIsActive;

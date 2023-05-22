@@ -13,7 +13,8 @@
         {{ lesson.id }} урок
       </div>
       <div v-for="cl in classes" :key="cl.id" class="schedule-field f-center">
-        <ScheduleLesson :add-button-click="addButtonClick" :edit-button-click="editButtonClick"
+        <ScheduleLesson :classrooms="classrooms" :subjects="subjects" :teachers="teachers"
+                        :add-button-click="addButtonClick" :edit-button-click="editButtonClick"
                         :subject="schedule.filter(sched => sched.lesson_index === lesson.id && sched.group === cl.id && sched.weekday === date)[0] ?
                         schedule.filter(sched => sched.lesson_index === lesson.id && sched.group === cl.id && sched.weekday === date)[0] :
                         {
@@ -57,6 +58,18 @@ export default {
       required: true
     },
     schedule: {
+      type: Array,
+      required: true
+    },
+    classrooms: {
+      type: Array,
+      required: true
+    },
+    subjects: {
+      type: Array,
+      required: true
+    },
+    teachers: {
       type: Array,
       required: true
     },
