@@ -43,12 +43,15 @@ import TableItem from "@/components/TableItem.vue";
 import Toolbar from "@/components/ToolbarTable.vue";
 import Modal from "@/components/Modal.vue";
 import axios from "axios";
+import useValidate from "@vuelidate/core";
+import {required} from "@vuelidate/validators";
 
 export default {
   name: "TeachersView",
   components: {Modal, Toolbar, TableItem, Table},
   data() {
     return {
+      v$: useValidate(),
       teachers: null,
       currentTeacher: {
         id: null,
@@ -59,6 +62,16 @@ export default {
       isCheckBoxSelected: false,
       isEditing: null,
       selectedTeachersIds: [],
+    }
+  },
+  validations() {
+    const useAllowedChars = (value) => {
+      return /^[а-яА-ЯёЁa-zA-Z0-9\s]+$/.test(value);
+    }
+    return {
+      currentTeacher: {
+        name: {required, useAllowedChars},
+      }
     }
   },
   methods: {
@@ -74,6 +87,12 @@ export default {
       this.modalIsActive = !this.modalIsActive;
     },
     async modalApplyClick() {
+      if (this.v$.$invalid) {
+        alert("Валидация не пройдена!");
+        return;
+      }
+      this.toggleModal();
+      this.$store.commit("setLoaded", false);
       if (this.isEditing) {
         await axios.put('https://schedugen.pythonanywhere.com/api/teachers/' + this.currentTeacher.id + '/', {
           name: this.currentTeacher.name
@@ -87,7 +106,6 @@ export default {
         }
       }
       await this.refreshTeachers();
-      this.toggleModal();
     },
     addButtonClick() {
       this.modalTitle = "Добавить учителя";

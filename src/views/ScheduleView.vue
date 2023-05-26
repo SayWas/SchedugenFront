@@ -1,6 +1,7 @@
 <template>
   <div class="page-content">
-    <Toolbar :date="date" :is-mistake="isMistake" :previous-button-click="previousButtonClick" :forward-button-click="forwardButtonClick"
+    <Toolbar :date="date" :is-mistake="isMistake" :previous-button-click="previousButtonClick"
+             :forward-button-click="forwardButtonClick"
              :warning-button-click="warningButtonClick"
              :generate-button-click="generateButtonClick"/>
     <Schedule :date="date" :classes="classes" :lessons="lessons" :schedule="schedule" :teachers="teachers"
@@ -40,12 +41,15 @@ import Toolbar from "@/components/ToolbarSchedule.vue";
 import Schedule from "@/components/Schedule.vue";
 import axios from "axios";
 import Modal from "@/components/Modal.vue";
+import useValidate from "@vuelidate/core";
+import {required} from "@vuelidate/validators";
 
 export default {
   name: "ScheduleView",
   components: {Modal, Schedule, Toolbar},
   data() {
     return {
+      v$: useValidate(),
       date: 0,
       isMistake: false,
       schedule: [],
@@ -94,6 +98,15 @@ export default {
       isDeleting: false
     }
   },
+  validations() {
+    return {
+      currentSubject: {
+        subject: { required },
+        classroom: { required },
+        teacher: { required }
+      }
+    }
+  },
   methods: {
     async getSchedule() {
       await axios.get('https://schedugen.pythonanywhere.com/api/schedule-classes/',
@@ -127,6 +140,12 @@ export default {
       this.modalIsActive = !this.modalIsActive;
     },
     async modalApplyClick() {
+      if (this.v$.$invalid) {
+        alert("Валидация не пройдена!");
+        return;
+      }
+      this.toggleModal();
+      this.$store.commit("setLoaded", false);
       if (this.isEditing) {
         if (this.isDeleting) {
           await axios.delete('https://schedugen.pythonanywhere.com/api/schedule-classes/' + this.currentSubject.id + '/',
@@ -152,7 +171,6 @@ export default {
         }, {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
       }
       await this.getSchedule();
-      this.toggleModal();
     },
     addButtonClick(subject) {
       this.modalTitle = "Добавить урок";
@@ -189,10 +207,26 @@ export default {
       this.isMistake = !this.isMistake;
     },
     generateButtonClick() {
-      // generate
-    }
+      axios.post('https://schedugen.pythonanywhere.com/api/generate/',
+          {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}});
+      this.checkGenerated();
+    },
+    checkGenerated() {
+      this.$store.commit("setLoaded", false);
+      var timerId = setInterval(async () => {
+        await axios.get('https://schedugen.pythonanywhere.com/api/generate',
+            {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
+            .then((res) => {
+              if (res.data.is_generated) {
+                clearInterval(timerId);
+                this.getSchedule();
+              }
+            });
+      }, 10000);
+    },
   },
   mounted() {
+    // this.checkGenerated();
     this.getSchedule();
   }
 }

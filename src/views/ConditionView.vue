@@ -10,7 +10,7 @@
           ФИО учителя
         </div>
         <div class="table-name table-header-name f-center">
-          Количество очков
+          Сложность предмета
         </div>
         <div class="table-name table-header-name f-center">
           Макс. кол-во уроков
@@ -31,10 +31,10 @@
                 {{ index + 1 }}
               </div>
               <div class="table-name f-center">
-                {{ condition.subject }}
+                {{ this.subjects.filter(subject => subject.id === condition.subject)[0] === undefined ? '...' : this.subjects.filter(subject => subject.id === condition.subject)[0].name }}
               </div>
               <div class="table-name f-center">
-                {{ condition.teacher }}
+                {{ this.teachers.filter(teacher => teacher.id === condition.teacher)[0] === undefined ? '...' : this.teachers.filter(teacher => teacher.id === condition.teacher)[0].name }}
               </div>
               <div class="table-name f-center">
                 {{ condition.points }}
@@ -60,14 +60,14 @@
       <template #modal-body>
         <div class="text-field">
           <label class="text-field-label">Название предмета</label>
-          <select class="text-field-input select" multiple v-model="currentCondition.subjects">
+          <select class="text-field-input select-one" v-model="currentCondition.subject">
             <option v-for="subject in subjects" :value="subject.id">{{ subject.name }}</option>
           </select>
           <label class="text-field-label">ФИО учителя</label>
-          <select class="text-field-input select" multiple v-model="currentCondition.teachers">
+          <select class="text-field-input select-one" v-model="currentCondition.teacher">
             <option v-for="teacher in teachers" :value="teacher.id">{{ teacher.name }}</option>
           </select>
-          <label class="text-field-label">Количество очков</label>
+          <label class="text-field-label">Сложность предмета</label>
           <input class="text-field-input" placeholder="5" v-model="currentCondition.points">
           <label class="text-field-label">Максимальное количество уроков</label>
           <input class="text-field-input" placeholder="5" v-model="currentCondition.max_lessons">
@@ -91,12 +91,15 @@ import TableItem from "@/components/TableItem.vue";
 import Toolbar from "@/components/ToolbarTable.vue";
 import Modal from "@/components/Modal.vue";
 import axios from "axios";
+import useValidate from "@vuelidate/core";
+import {required, integer} from "@vuelidate/validators";
 
 export default {
   name: "ConditionSView",
   components: {Modal, Toolbar, TableItem, Table},
   data() {
     return {
+      v$: useValidate(),
       conditions: null,
       currentCondition: {
         id: null,
@@ -104,8 +107,8 @@ export default {
         teacher: null,
         points: null,
         max_lessons: null,
-        groups: null,
-        classrooms: null,
+        groups: [],
+        classrooms: [],
       },
       classrooms: null,
       classes: null,
@@ -118,13 +121,20 @@ export default {
       selectedConditionsIds: [],
     }
   },
+  validations() {
+    return {
+      currentCondition: {
+        subject: {required},
+        teacher: {required},
+        points: {required, integer},
+        max_lessons: {required, integer},
+        groups: {required},
+        classrooms: {required},
+      }
+    }
+  },
   methods: {
     async refreshConditions() {
-      await axios.get('https://schedugen.pythonanywhere.com/api/classes/',
-          {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
-          .then((res) => {
-            this.conditions = res.data;
-          });
       await axios.get('https://schedugen.pythonanywhere.com/api/teachers/',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
           .then((res) => {
@@ -145,6 +155,11 @@ export default {
           .then((res) => {
             this.subjects = res.data;
           });
+      await axios.get('https://schedugen.pythonanywhere.com/api/classes/',
+          {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
+          .then((res) => {
+            this.conditions = res.data;
+          });
       if (this.teachers.length === 0 || this.classrooms.length === 0 || this.classes.length === 0 || this.subjects.length === 0)
         return;
       this.$store.commit("setLoaded", true);
@@ -153,30 +168,35 @@ export default {
       this.modalIsActive = !this.modalIsActive;
     },
     async modalApplyClick() {
+      if (this.v$.$invalid) {
+        alert("Валидация не пройдена!");
+        return;
+      }
+      this.toggleModal();
+      this.$store.commit("setLoaded", false);
       if (this.isEditing) {
-        await axios.put('https://schedugen.pythonanywhere.com/api/classes/' + this.currentTeacher.id + '/', {
-          subject: this.currentCondition.subject,
-          teacher: this.currentCondition.teacher,
-          points: this.currentCondition.points,
-          max_lessons: this.currentCondition.max_lessons,
+        await axios.put('https://schedugen.pythonanywhere.com/api/classes/' + this.currentCondition.id + '/', {
           groups: this.currentCondition.groups,
           classrooms: this.currentCondition.classrooms,
+          max_lessons: this.currentCondition.max_lessons,
+          points: this.currentCondition.points,
+          teacher: this.currentCondition.teacher,
+          subject: this.currentCondition.subject,
         }, {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
       } else {
         await axios.post('https://schedugen.pythonanywhere.com/api/classes/', {
-          subject: this.currentCondition.subject,
-          teacher: this.currentCondition.teacher,
-          points: this.currentCondition.points,
-          max_lessons: this.currentCondition.max_lessons,
           groups: this.currentCondition.groups,
           classrooms: this.currentCondition.classrooms,
+          max_lessons: this.currentCondition.max_lessons,
+          points: this.currentCondition.points,
+          teacher: this.currentCondition.teacher,
+          subject: this.currentCondition.subject,
         }, {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
         if (this.isCheckBoxSelected) {
           this.selectAllClick()
         }
       }
       await this.refreshConditions();
-      this.toggleModal();
     },
     addButtonClick() {
       this.modalTitle = "Добавить ограничение";
@@ -193,6 +213,7 @@ export default {
       this.modalTitle = "Изменить ограничение";
       this.isEditing = true;
       this.currentCondition = {...this.conditions[this.conditions.findIndex(condition => condition.id === id)]};
+      console.log(this.currentCondition)
       this.toggleModal();
     },
     selectCondition(selectedConditionsIds) {
@@ -301,5 +322,9 @@ export default {
 
 .select {
   height: 100px;
+}
+
+.select-one {
+  height: 50px;
 }
 </style>

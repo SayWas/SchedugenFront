@@ -4,10 +4,10 @@
       <div class="login-title">Schedugen</div>
       <div class="login-form">
         <div class="login-form-input">
-          <input v-model="login" type="text" placeholder="Логин">
+          <input v-model="state.login" type="text" placeholder="Логин">
         </div>
         <div class="login-form-input">
-          <input v-model="password" type="password" placeholder="Пароль">
+          <input v-model="state.password" type="password" placeholder="Пароль">
         </div>
         <div class="login-form-button">
           <button @click="loginButtonClick">Войти</button>
@@ -19,20 +19,51 @@
 
 <script>
 import axios from "axios";
+import useValidate from "@vuelidate/core";
+import {required} from "@vuelidate/validators";
+import {reactive, computed} from "vue";
 
 export default {
   name: "LoginView",
-  data() {
-    return {
+  setup() {
+    const state = reactive({
       login: "",
       password: ""
+    });
+
+    const useAllowedChars = (value) => {
+      return /^[a-zA-Z0-9]+$/.test(value);
+    }
+
+    const rules = computed(() => {
+      return {
+        login: {
+          required,
+          useAllowedChars
+        },
+        password: {
+          required,
+          useAllowedChars
+        }
+      }
+    });
+    const v$ = useValidate(rules, state);
+
+    return {
+      state,
+      v$
     }
   },
   methods: {
     loginButtonClick() {
+      this.v$.$validate();
+      if (this.v$.$error) {
+        alert("Валидация не пройдена!");
+        return;
+      }
       axios.post("https://schedugen.pythonanywhere.com/api/login/", {
-        username: this.login,
-        password: this.password
+        username: this.state.login,
+        password: this.state.password
       }).then(response => {
         if (response.status === 200) {
           this.$store.commit("setAccessToken", response.data.access);
@@ -56,6 +87,7 @@ export default {
   height: 100vh;
   background-color: var(--color-header);
 }
+
 .login-container {
   display: flex;
   flex-direction: column;
@@ -66,11 +98,13 @@ export default {
   background-color: white;
   border-radius: 10px;
 }
+
 .login-title {
   font-size: 30px;
   font-weight: bold;
   color: var(--color-header);
 }
+
 .login-form {
   display: flex;
   flex-direction: column;
@@ -78,6 +112,7 @@ export default {
   align-items: center;
   width: 300px;
 }
+
 .login-form-input {
   display: flex;
   justify-content: center;
@@ -86,6 +121,7 @@ export default {
   height: 50px;
   margin-top: 20px;
 }
+
 .login-form-input input {
   width: 100%;
   height: 100%;
@@ -96,6 +132,7 @@ export default {
   font-weight: normal;
   color: #687182;
 }
+
 .login-form-button {
   display: flex;
   justify-content: center;
@@ -104,6 +141,7 @@ export default {
   height: 50px;
   margin-top: 20px;
 }
+
 .login-form-button button {
   width: 100%;
   height: 100%;

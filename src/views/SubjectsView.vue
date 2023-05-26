@@ -43,12 +43,15 @@ import TableItem from "@/components/TableItem.vue";
 import Toolbar from "@/components/ToolbarTable.vue";
 import Modal from "@/components/Modal.vue";
 import axios from "axios";
+import useValidate from "@vuelidate/core";
+import {required} from "@vuelidate/validators";
 
 export default {
   name: "SubjectsView",
   components: {Modal, Toolbar, TableItem, Table},
   data() {
     return {
+      v$: useValidate(),
       subjects: null,
       currentSubject: {
         id: null,
@@ -59,6 +62,16 @@ export default {
       isCheckBoxSelected: false,
       isEditing: null,
       selectedSubjectsIds: [],
+    }
+  },
+  validations() {
+    const useAllowedChars = (value) => {
+      return /^[а-яА-ЯёЁa-zA-Z0-9\s]+$/.test(value);
+    }
+    return {
+      currentSubject: {
+        name: {required, useAllowedChars},
+      }
     }
   },
   methods: {
@@ -74,6 +87,12 @@ export default {
       this.modalIsActive = !this.modalIsActive;
     },
     async modalApplyClick() {
+      if (this.v$.$invalid) {
+        alert("Валидация не пройдена!");
+        return;
+      }
+      this.toggleModal();
+      this.$store.commit("setLoaded", false);
       if (this.isEditing) {
         await axios.put('https://schedugen.pythonanywhere.com/api/subjects/' + this.currentSubject.id + '/', {
           name: this.currentSubject.name,
@@ -87,7 +106,6 @@ export default {
         }
       }
       await this.refreshSubjects();
-      this.toggleModal();
     },
     addButtonClick() {
       this.modalTitle = "Добавить предмет";

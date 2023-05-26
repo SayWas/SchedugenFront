@@ -43,12 +43,15 @@ import Table from "@/components/Table.vue";
 import TableItem from "@/components/TableItem.vue";
 import Modal from "@/components/Modal.vue";
 import axios from "axios";
+import useValidate from "@vuelidate/core";
+import {required} from "@vuelidate/validators";
 
 export default {
   name: "ClassesView",
   components: {TableItem, Table, Toolbar, Modal},
   data() {
     return {
+      v$: useValidate(),
       classes: null,
       currentClass: {
         id: null,
@@ -59,6 +62,16 @@ export default {
       isCheckBoxSelected: false,
       isEditing: null,
       selectedClassesIds: [],
+    }
+  },
+  validations() {
+    const useAllowedChars = (value) => {
+      return /^[а-яА-ЯёЁa-zA-Z0-9\s]+$/.test(value)
+    }
+    return {
+      currentClass: {
+        name: {required, useAllowedChars},
+      }
     }
   },
   methods: {
@@ -74,6 +87,12 @@ export default {
       this.modalIsActive = !this.modalIsActive;
     },
     async modalApplyClick() {
+      if (this.v$.$invalid) {
+        alert("Валидация не пройдена!");
+        return;
+      }
+      this.toggleModal();
+      this.$store.commit("setLoaded", false);
       if (this.isEditing) {
         await axios.put('https://schedugen.pythonanywhere.com/api/groups/' + this.currentClass.id + '/', {
           name: this.currentClass.name,
@@ -87,7 +106,6 @@ export default {
         }
       }
       await this.refreshClasses();
-      this.toggleModal();
     },
     addButtonClick() {
       this.modalTitle = "Добавить класс";
