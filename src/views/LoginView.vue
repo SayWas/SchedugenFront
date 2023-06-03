@@ -61,7 +61,7 @@ export default {
         alert("Валидация не пройдена!");
         return;
       }
-      axios.post("https://schedugen.pythonanywhere.com/api/login/", {
+      axios.post(this.$store.state.api_link +"login/", {
         username: this.state.login,
         password: this.state.password
       }).then(response => {

@@ -135,27 +135,27 @@ export default {
   },
   methods: {
     async refreshConditions() {
-      await axios.get('https://schedugen.pythonanywhere.com/api/teachers/',
+      await axios.get(this.$store.state.api_link +'teachers/',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
           .then((res) => {
             this.teachers = res.data;
           });
-      await axios.get('https://schedugen.pythonanywhere.com/api/classrooms/',
+      await axios.get(this.$store.state.api_link +'classrooms/',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
           .then((res) => {
             this.classrooms = res.data;
           });
-      await axios.get('https://schedugen.pythonanywhere.com/api/groups/',
+      await axios.get(this.$store.state.api_link +'groups/',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
           .then((res) => {
             this.classes = res.data;
           });
-      await axios.get('https://schedugen.pythonanywhere.com/api/subjects/',
+      await axios.get(this.$store.state.api_link +'subjects/',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
           .then((res) => {
             this.subjects = res.data;
           });
-      await axios.get('https://schedugen.pythonanywhere.com/api/classes/',
+      await axios.get(this.$store.state.api_link +'classes/',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
           .then((res) => {
             this.conditions = res.data;
@@ -175,7 +175,7 @@ export default {
       this.toggleModal();
       this.$store.commit("setLoaded", false);
       if (this.isEditing) {
-        await axios.put('https://schedugen.pythonanywhere.com/api/classes/' + this.currentCondition.id + '/', {
+        await axios.put(this.$store.state.api_link +'classes/' + this.currentCondition.id + '/', {
           groups: this.currentCondition.groups,
           classrooms: this.currentCondition.classrooms,
           max_lessons: this.currentCondition.max_lessons,
@@ -184,7 +184,7 @@ export default {
           subject: this.currentCondition.subject,
         }, {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
       } else {
-        await axios.post('https://schedugen.pythonanywhere.com/api/classes/', {
+        await axios.post(this.$store.state.api_link +'classes/', {
           groups: this.currentCondition.groups,
           classrooms: this.currentCondition.classrooms,
           max_lessons: this.currentCondition.max_lessons,
@@ -230,11 +230,11 @@ export default {
     },
     async deleteButtonClick() {
       for (let i = 0; i < this.selectedConditionsIds.length; i++) {
-        await axios.delete('https://schedugen.pythonanywhere.com/api/classes/' + this.selectedConditionsIds[i] + '/',
+        await axios.delete(this.$store.state.api_link +'classes/' + this.selectedConditionsIds[i] + '/',
             {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}});
       }
       this.selectedConditionsIds = [];
-      this.refreshConditions();
+      await this.refreshConditions();
     }
   },
   mounted() {

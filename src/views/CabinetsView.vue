@@ -76,7 +76,7 @@ export default {
   },
   methods: {
     async refreshCabinets() {
-      await axios.get('https://schedugen.pythonanywhere.com/api/classrooms/',
+      await axios.get(this.$store.state.api_link + 'classrooms/',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
           .then((res) => {
             this.cabinets = res.data;
@@ -94,11 +94,11 @@ export default {
       this.toggleModal();
       this.$store.commit("setLoaded", false);
       if (this.isEditing) {
-        await axios.put('https://schedugen.pythonanywhere.com/api/classrooms/' + this.currentCabinet.id + '/', {
+        await axios.put(this.$store.state.api_link +'classrooms/' + this.currentCabinet.id + '/', {
           name: this.currentCabinet.name,
         }, {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
       } else {
-        await axios.post('https://schedugen.pythonanywhere.com/api/classrooms/', {
+        await axios.post(this.$store.state.api_link +'classrooms/', {
           name: this.currentCabinet.name,
         }, {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
         if (this.isCheckBoxSelected) {
@@ -133,11 +133,11 @@ export default {
     },
     async deleteButtonClick() {
       for (let i = 0; i < this.selectedCabinetsIds.length; i++) {
-        await axios.delete('https://schedugen.pythonanywhere.com/api/classrooms/' + this.selectedCabinetsIds[i] + '/',
+        await axios.delete(this.$store.state.api_link + 'classrooms/' + this.selectedCabinetsIds[i] + '/',
             {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}});
       }
       this.selectedClassesIds = [];
-      this.refreshCabinets();
+      await this.refreshCabinets();
     }
   },
   mounted() {
