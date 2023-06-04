@@ -16,9 +16,10 @@
         </div>
       </div>
       <div class="block">
+        <ExcelIcon @click="exportButtonClick" class="excel-button"></ExcelIcon>
         <WarningIcon @click="warningButtonClick" class="warning-button"
                      :class="{'warning-button-not-mistake':!isMistake}"/>
-        <div @click="generateButtonClick" class="button generate-button">Составить</div>
+        <div @click="generateButtonClick" class="button generate-button">Составить(beta)</div>
       </div>
     </div>
   </div>
@@ -29,10 +30,11 @@ import LeftArrowIcon from "@/components/icons/LeftArrowIcon.vue";
 import RightArrowIcon from "@/components/icons/RightArrowIcon.vue";
 import DateIcon from "@/components/icons/DateIcon.vue";
 import WarningIcon from "@/components/icons/WarningIcon.vue";
+import ExcelIcon from "@/components/icons/ExcelIcon.vue";
 
 export default {
   name: "ToolbarSchedule",
-  components: {WarningIcon, DateIcon, RightArrowIcon, LeftArrowIcon},
+  components: {ExcelIcon, WarningIcon, DateIcon, RightArrowIcon, LeftArrowIcon},
   data() {
     return {
       weekNames: ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
@@ -60,6 +62,10 @@ export default {
       required: true
     },
     generateButtonClick: {
+      type: Function,
+      required: true
+    },
+    exportButtonClick: {
       type: Function,
       required: true
     }
@@ -131,9 +137,22 @@ export default {
   padding: 3px;
 }
 
+.excel-button {
+  height: 20px;
+  width: 20px;
+  margin-right: 5px;
+  cursor: pointer;
+  transition: 0.05s ease-out;
+}
+
+.excel-button:active {
+  transform: scale(1.1);
+}
+
 .warning-button {
   height: 30px;
   width: 30px;
+  margin-right: 5px;
   cursor: pointer;
 }
 

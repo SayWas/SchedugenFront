@@ -2,6 +2,7 @@
   <div class="page-content">
     <Toolbar :date="date" :is-mistake="isMistake" :previous-button-click="previousButtonClick"
              :forward-button-click="forwardButtonClick"
+             :export-button-click="exportButtonClick"
              :warning-button-click="warningButtonClick"
              :generate-button-click="generateButtonClick"/>
     <Schedule :date="date" :classes="classes" :lessons="lessons" :schedule="schedule" :teachers="teachers"
@@ -43,8 +44,8 @@
             <div class="mistake-position">
               <div class="mistake-position-item">
                 {{ weekNames[mistake.classes[0].weekday] }},
-                {{ mistake.classes[0].group }}-{{mistake.classes[1].group}},
-                Урок {{ mistake.classes[0].lesson_index }}
+                {{ mistake.classes[0].group }}-{{ mistake.classes[1].group }},
+                Урок {{ mistake.classes[0].lesson_index + 1}}
               </div>
             </div>
           </div>
@@ -65,6 +66,7 @@ import Modal from "@/components/Modal.vue";
 import useValidate from "@vuelidate/core";
 import {required} from "@vuelidate/validators";
 import Mistakes from "@/components/Mistakes.vue";
+import * as XLSX from "xlsx";
 
 export default {
   name: "ScheduleView",
@@ -153,27 +155,27 @@ export default {
   },
   methods: {
     async getSchedule() {
-      await axios.get(this.$store.state.api_link +'schedule-classes/',
+      await axios.get(this.$store.state.api_link + 'schedule-classes/',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
           .then((res) => {
             this.schedule = res.data;
           });
-      await axios.get(this.$store.state.api_link +'groups/',
+      await axios.get(this.$store.state.api_link + 'groups/',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
           .then((res) => {
             this.classes = res.data;
           });
-      await axios.get(this.$store.state.api_link +'subjects/',
+      await axios.get(this.$store.state.api_link + 'subjects/',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
           .then((res) => {
             this.subjects = res.data;
           });
-      await axios.get(this.$store.state.api_link +'classrooms/',
+      await axios.get(this.$store.state.api_link + 'classrooms/',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
           .then((res) => {
             this.classrooms = res.data;
           });
-      await axios.get(this.$store.state.api_link +'teachers/',
+      await axios.get(this.$store.state.api_link + 'teachers/',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
           .then((res) => {
             this.teachers = res.data;
@@ -196,10 +198,10 @@ export default {
       this.$store.commit("setLoaded", false);
       if (this.isEditing) {
         if (this.isDeleting) {
-          await axios.delete(this.$store.state.api_link +'schedule-classes/' + this.currentSubject.id + '/',
+          await axios.delete(this.$store.state.api_link + 'schedule-classes/' + this.currentSubject.id + '/',
               {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}});
         } else {
-          await axios.put(this.$store.state.api_link +'schedule-classes/' + this.currentSubject.id + '/', {
+          await axios.put(this.$store.state.api_link + 'schedule-classes/' + this.currentSubject.id + '/', {
             weekday: this.currentSubject.weekday,
             lesson_index: this.currentSubject.lesson_index,
             group: this.currentSubject.group,
@@ -209,7 +211,7 @@ export default {
           }, {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
         }
       } else {
-        await axios.post(this.$store.state.api_link +'schedule-classes/', {
+        await axios.post(this.$store.state.api_link + 'schedule-classes/', {
           weekday: this.currentSubject.weekday,
           lesson_index: this.currentSubject.lesson_index,
           group: this.currentSubject.group,
@@ -250,10 +252,29 @@ export default {
         return;
       this.date += 1;
     },
+    exportButtonClick() {
+      if (this.schedule.length === 0) {
+        alert("Нельзя экспортировать пустое расписание!");
+        return;
+      }
+      let data = this.schedule.map(s => {return {...s}})
+      data.forEach((item) => {
+        delete item.id;
+        item.weekday = this.weekNames[item.weekday];
+        item.group = this.classes.find((group) => group.id === item.group).name;
+        item.teacher = this.teachers.find((teacher) => teacher.id === item.teacher).name;
+        item.subject = this.subjects.find((subject) => subject.id === item.subject).name;
+        item.classroom = this.classrooms.find((classroom) => classroom.id === item.classroom).name;
+      });
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Schedule");
+      XLSX.writeFile(wb, "schedule.xlsx");
+    },
     async warningButtonClick() {
       this.toggleMistakes()
       if (!this.mistakesAreLoaded) {
-        await axios.get(this.$store.state.api_link +'mistakes',
+        await axios.get(this.$store.state.api_link + 'mistakes',
             {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
             .then((res) => {
               this.mistakes = res.data.mistakes;
@@ -261,61 +282,27 @@ export default {
         this.mistakesAreLoaded = true;
       }
     },
-    checkMistakes() {
-      // for (let i = 0; i < 7; i++) {
-      //   for (const j in this.lessons) {
-      //     for (const c in this.classes) {
-      //       for (const c1 in this.classes) {
-      //         if (this.classes[c].id === this.classes[c1].id)
-      //           continue;
-      //         let schedule_class = this.schedule.filter((s) => s.weekday === i && s.lesson_index === this.lessons[j].id && s.group === this.classes[c].id)[0];
-      //         let schedule_class1 = this.schedule.filter((s) => s.weekday === i && s.lesson_index === this.lessons[j].id && s.group === this.classes[c1].id)[0];
-      //         let mistake_message = "";
-      //
-      //         if (schedule_class === undefined || schedule_class1 === undefined)
-      //           continue;
-      //
-      //         if (schedule_class.teacher === schedule_class1.teacher)
-      //           mistake_message += "Учитель " + this.teachers.filter(t => t.id === schedule_class.teacher)[0].name + " ведет " + this.lessons[j].id + " урок у групп " + this.classes[c].name + " и " + this.classes[c1].name + "\n";
-      //         if (schedule_class.classroom === schedule_class1.classroom)
-      //           mistake_message += "Аудитория " + this.classrooms.filter(c => c.id === schedule_class.classroom)[0].name + " используется для " + this.lessons[j].id + " урока у групп " + this.classes[c].name + " и " + this.classes[c1].name + "\n";
-      //
-      //         if (mistake_message === "")
-      //           continue;
-      //
-      //         this.mistakes.push({
-      //           weekday: i,
-      //           lesson_index: this.lessons[j].id,
-      //           group: this.classes[c].id,
-      //           messageType: "Пересечение",
-      //           messageText: mistake_message
-      //         });
-      //       }
-      //     }
-      //   }
-      // }
-    },
     generateButtonClick() {
-      axios.post(this.$store.state.api_link +'generate/',
+      axios.post(this.$store.state.api_link + 'generate/',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}});
       this.checkGenerated();
     },
     async isGenerating() {
-      await axios.get(this.$store.state.api_link +'is_generating',
+      await axios.get(this.$store.state.api_link + 'is_generating',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
           .then((res) => {
-            if (res.data.is_generating) {
+            if (!res.data.is_generating) {
               this.getSchedule();
-              return true;
+              return false;
             }
           });
     },
     checkGenerated() {
       this.$store.commit("setLoaded", false);
-      if (this.isGenerating())
+      if (this.isGenerating() === false)
         return;
       var timerId = setInterval(async () => {
-        await axios.get(this.$store.state.api_link +'is_generating',
+        await axios.get(this.$store.state.api_link + 'is_generating',
             {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
             .then((res) => {
               if (!res.data.is_generating) {
