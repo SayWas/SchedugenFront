@@ -19,7 +19,7 @@
           <select class="text-field-input" v-model="currentSubject.subject">
             <option v-for="subject in subjects" :value="subject.id">{{ subject.name }}</option>
           </select>
-          <label class="text-field-label">Название класса</label>
+          <label class="text-field-label">Номер аудитории</label>
           <select class="text-field-input" v-model="currentSubject.classroom">
             <option v-for="cl in classrooms" :value="cl.id">{{ cl.name }}</option>
           </select>
@@ -213,7 +213,7 @@ export default {
       } else {
         await axios.post(this.$store.state.api_link + 'schedule-classes/', {
           weekday: this.currentSubject.weekday,
-          lesson_index: this.currentSubject.lesson_index,
+          lesson_index: this.currentSubject.lesson_index - 1,
           group: this.currentSubject.group,
           teacher: this.currentSubject.teacher,
           subject: this.currentSubject.subject,
@@ -261,6 +261,7 @@ export default {
       data.forEach((item) => {
         delete item.id;
         item.weekday = this.weekNames[item.weekday];
+        item.lesson_index = item.lesson_index + 1;
         item.group = this.classes.find((group) => group.id === item.group).name;
         item.teacher = this.teachers.find((teacher) => teacher.id === item.teacher).name;
         item.subject = this.subjects.find((subject) => subject.id === item.subject).name;
@@ -283,11 +284,12 @@ export default {
       }
     },
     generateButtonClick() {
-      axios.post(this.$store.state.api_link + 'generate/',
+      axios.post(this.$store.state.api_link + 'generate',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}});
       this.checkGenerated();
     },
     async isGenerating() {
+      console.log('first')
       await axios.get(this.$store.state.api_link + 'is_generating',
           {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
           .then((res) => {
@@ -302,6 +304,7 @@ export default {
       if (this.isGenerating() === false)
         return;
       var timerId = setInterval(async () => {
+        console.log('second')
         await axios.get(this.$store.state.api_link + 'is_generating',
             {headers: {Authorization: 'Bearer ' + this.$store.state.access_token}})
             .then((res) => {
@@ -310,7 +313,7 @@ export default {
                 this.getSchedule();
               }
             });
-      }, 10000);
+      }, 60000);
     },
   },
   mounted() {

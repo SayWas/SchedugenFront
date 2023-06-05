@@ -19,7 +19,7 @@
         <ExcelIcon @click="exportButtonClick" class="excel-button"></ExcelIcon>
         <WarningIcon @click="warningButtonClick" class="warning-button"
                      :class="{'warning-button-not-mistake':!isMistake}"/>
-        <div @click="generateButtonClick" class="button generate-button">Составить(beta)</div>
+        <div @click="generateButtonClick" class="button generate-button">Составить</div>
       </div>
     </div>
   </div>
@@ -143,6 +143,7 @@ export default {
   margin-right: 5px;
   cursor: pointer;
   transition: 0.05s ease-out;
+  opacity: 0.8;
 }
 
 .excel-button:active {
