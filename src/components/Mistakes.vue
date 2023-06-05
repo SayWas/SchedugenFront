@@ -8,7 +8,7 @@
         <button class="button cancel-button" @click="close">Закрыть</button>
       </div>
       <div v-if="!mistakesAreLoaded" class="wrapper">
-        <img src="src/assets/loading.gif" class="loading-gif" alt="Loading...">
+        <img src="../assets/loading.gif" class="loading-gif" alt="Loading...">
       </div>
       <div v-else class="modal-body">
         <slot name="modal-body"/>
