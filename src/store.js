@@ -2,7 +2,7 @@ import {createStore} from 'vuex'
 
 const store = createStore({
     state: {
-        api_link: 'http://231735.fornex.cloud/api/',
+        api_link: 'https://231735.fornex.cloud/api/',
         // api_link: 'https://schedugen.pythonanywhere.com/api/',
         access_token: localStorage.getItem('user-token') || '',
         page_is_loaded: false
